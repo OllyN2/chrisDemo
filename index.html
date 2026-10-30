@@ -12,7 +12,10 @@
   header { text-align: center; }
   header svg { width: 180px; height: auto; }
   h1 { margin: 4px 0 0; font-size: 2rem; letter-spacing: .02em; }
-  .sub { margin: 4px 0 12px; color: #55635f; font-size: .9rem; }
+  .sub { margin: 4px 0 6px; color: #55635f; font-size: .9rem; }
+  .days { display: flex; justify-content: center; align-items: center; gap: 14px; margin-bottom: 12px; font-weight: 700; }
+  .days a { color: var(--mint-dark); text-decoration: none; cursor: pointer; padding: 4px 8px; border-radius: 8px; background: #fff; }
+  .days a[hidden] { display: none; }
   details { background: #fff; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; font-size: .9rem; }
   summary { cursor: pointer; font-weight: 600; }
   ol { background: #fff; border-radius: 10px; padding: 10px 12px 10px 34px; margin: 0 0 12px; }
@@ -55,7 +58,13 @@
       <circle cx="178" cy="84" r="15" fill="#1d2b28"/><circle cx="178" cy="84" r="6" fill="#bbb"/>
     </svg>
     <h1>Sei Posti</h1>
-    <p class="sub">The daily Fiat Multipla seating puzzle · <span id="num"></span></p>
+    <p class="sub">The daily Fiat Multipla seating puzzle</p>
+    <nav class="days">
+      <a id="prev" aria-label="Previous puzzle">◀</a>
+      <span id="num"></span>
+      <a id="next" aria-label="Next puzzle">▶</a>
+      <a id="today">Today</a>
+    </nav>
   </header>
 
   <details>
@@ -82,7 +91,7 @@
     <p id="winline"></p>
     <p class="fact"><b>Multipla fact:</b> <span id="fact"></span></p>
     <p class="stats" id="stats"></p>
-    <p class="stats">Next trip in <span id="countdown"></span></p>
+    <p class="stats" id="next-trip">Next trip in <span id="countdown"></span></p>
     <button class="big" id="share">Share result</button>
   </section>
 </main>
@@ -107,8 +116,12 @@ const FACTS = [
 
 // Puzzle number from the local date; #1 is 29 Oct 2026.
 const now = new Date();
-const day = Math.max(0, Math.round((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(2026, 9, 29)) / 864e5));
+const today = Math.max(0, Math.round((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(2026, 9, 29)) / 864e5));
+// ?day=N plays puzzle #N instead of today's.
+const asked = parseInt(new URLSearchParams(location.search).get("day"), 10);
+const day = asked >= 1 ? asked - 1 : today;
 const num = day + 1;
+const isToday = day === today;
 
 function mulberry32(a) {
   return function () {
@@ -186,7 +199,7 @@ const $ = id => document.getElementById(id);
 function save() { localStorage.setItem(KEY, JSON.stringify({ place, history, solved })); }
 
 function render() {
-  $("num").textContent = `#${num}`;
+  $("num").textContent = `#${num} · ${new Date(2026, 9, 29 + day).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}`;
   $("clues").innerHTML = clues.map((c, i) =>
     `<li data-i="${i}" class="${struck.has(i) ? "done" : ""} ${broken.includes(i) ? "broken" : ""}">${c.t}</li>`).join("");
   $("tray").innerHTML = cast.map((p, i) => place.includes(i) ? "" :
@@ -222,10 +235,7 @@ function check() {
   history.push(p.filter((s, i) => s === sol[i]).length);
   if (broken.length === 0) {
     solved = true;
-    const st = JSON.parse(localStorage.getItem("seiposti-stats") || '{"streak":0,"max":0,"last":0,"wins":0}');
-    st.streak = st.last === num - 1 ? st.streak + 1 : 1;
-    st.max = Math.max(st.max, st.streak); st.last = num; st.wins++;
-    localStorage.setItem("seiposti-stats", JSON.stringify(st));
+    if (isToday) recordWin();
     $("msg").textContent = "";
   } else {
     $("msg").textContent = `${history.at(-1)} of 6 in the right seat. The red clues are broken.`;
@@ -233,16 +243,28 @@ function check() {
   save(); render();
 }
 
+// Streaks only count puzzles solved on their own day.
+function recordWin() {
+  const st = JSON.parse(localStorage.getItem("seiposti-stats") || '{"streak":0,"max":0,"last":0,"wins":0}');
+  if (st.last === num) return;
+  st.streak = st.last === num - 1 ? st.streak + 1 : 1;
+  st.max = Math.max(st.max, st.streak); st.last = num; st.wins++;
+  localStorage.setItem("seiposti-stats", JSON.stringify(st));
+}
+
 function showWin() {
   const n = history.length;
   $("winline").textContent = `Everyone's seated, in ${n} ${n === 1 ? "check" : "checks"}.`;
   $("fact").textContent = FACTS[day % FACTS.length];
   const st = JSON.parse(localStorage.getItem("seiposti-stats") || "{}");
-  $("stats").textContent = `Solved: ${st.wins || 1} · Streak: ${st.streak || 1} · Best: ${st.max || 1}`;
+  $("stats").textContent = `Daily solves: ${st.wins || 0} · Streak: ${st.streak || 0} · Best: ${st.max || 0}`;
+  $("next-trip").hidden = !isToday;
 }
 
+const dayURL = n => location.pathname + "?day=" + n;
+
 function shareText() {
-  return `Sei Posti #${num} 🚐\n` + history.map(n => "🟩".repeat(n) + "⬜".repeat(6 - n)).join("\n") + "\n" + location.href;
+  return `Sei Posti #${num} 🚐\n` + history.map(n => "🟩".repeat(n) + "⬜".repeat(6 - n)).join("\n") + "\n" + location.origin + dayURL(num);
 }
 
 function tick() {
@@ -265,6 +287,12 @@ $("share").onclick = async () => {
   await navigator.clipboard.writeText(text);
   $("share").textContent = "Copied!";
 };
+
+$("prev").href = dayURL(num - 1);
+$("prev").hidden = num <= 1;
+$("next").href = dayURL(num + 1);
+$("today").href = location.pathname;
+$("today").hidden = isToday;
 
 render(); tick(); setInterval(tick, 1000);
 </script>
