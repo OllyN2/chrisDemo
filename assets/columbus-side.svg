@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 180">
+  <!-- Original illustration of a one-box early-90s concept van, side view, facing right -->
+  <defs>
+    <linearGradient id="paint" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e3ebf5"/>
+      <stop offset=".45" stop-color="#a9bdd9"/>
+      <stop offset="1" stop-color="#6f88ad"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2b3f5e"/>
+      <stop offset=".55" stop-color="#4f7aa6"/>
+      <stop offset="1" stop-color="#9cc3e4"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#fff" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="rim">
+      <stop offset="0" stop-color="#f4f6f9"/>
+      <stop offset="1" stop-color="#9aa6b5"/>
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="205" cy="166" rx="185" ry="9" fill="#1d2b3a" opacity=".18"/>
+
+  <!-- body -->
+  <path d="M28 142 L26 72 Q26 40 56 35 L248 28 Q274 27 293 42 L370 104 Q386 116 386 132 L386 144 Q386 152 378 152 L36 152 Q28 152 28 142 Z"
+        fill="url(#paint)" stroke="#2d4a73" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- wheel arches -->
+  <path d="M60 152 Q60 116 96 116 Q132 116 132 152 Z" fill="#33445c"/>
+  <path d="M274 152 Q274 116 310 116 Q346 116 346 152 Z" fill="#33445c"/>
+
+  <!-- glasshouse: two-level side glazing plus the long raked windscreen -->
+  <path d="M46 46 L240 39 Q262 38 278 52 L334 100 L46 102 Z" fill="url(#glass)" stroke="#2d4a73" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M46 72 L304 72" stroke="#2d4a73" stroke-width="4"/>
+  <path d="M112 42 V102 M178 40 V102 M244 40 V102" stroke="#2d4a73" stroke-width="5"/>
+  <path d="M60 50 L230 44" stroke="url(#shine)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M258 46 L320 98" stroke="#fff" stroke-opacity=".35" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- belt-line stripe and sliding-door seam -->
+  <path d="M30 114 L372 114" stroke="#2d4a73" stroke-width="5"/>
+  <path d="M30 114 L372 114" stroke="#d9a400" stroke-width="1.5"/>
+  <path d="M178 104 V148" stroke="#2d4a73" stroke-width="1.5" opacity=".6"/>
+  <rect x="160" y="120" width="12" height="3" rx="1.5" fill="#2d4a73"/>
+
+  <!-- lights -->
+  <path d="M354 120 L384 120 L384 128 L362 128 Z" fill="#fff6c8" stroke="#2d4a73" stroke-width="1.5"/>
+  <rect x="28" y="84" width="6" height="26" rx="2" fill="#d6455b" stroke="#2d4a73" stroke-width="1.2"/>
+  <rect x="352" y="138" width="34" height="5" rx="2" fill="#2d4a73"/>
+
+  <!-- wheels -->
+  <g>
+    <circle cx="96" cy="150" r="27" fill="#1d2430"/>
+    <circle cx="96" cy="150" r="17" fill="url(#rim)" stroke="#5e6b7c" stroke-width="1.5"/>
+    <g stroke="#6f7c8e" stroke-width="3" stroke-linecap="round">
+      <path d="M96 136 V164 M82 150 H110 M86 140 L106 160 M106 140 L86 160"/>
+    </g>
+    <circle cx="96" cy="150" r="4" fill="#2d4a73"/>
+  </g>
+  <g>
+    <circle cx="310" cy="150" r="27" fill="#1d2430"/>
+    <circle cx="310" cy="150" r="17" fill="url(#rim)" stroke="#5e6b7c" stroke-width="1.5"/>
+    <g stroke="#6f7c8e" stroke-width="3" stroke-linecap="round">
+      <path d="M310 136 V164 M296 150 H324 M300 140 L320 160 M320 140 L300 160"/>
+    </g>
+    <circle cx="310" cy="150" r="4" fill="#2d4a73"/>
+  </g>
+</svg>

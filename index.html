@@ -4,107 +4,147 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sei Posti: the daily Italdesign Columbus puzzle</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <style>
-  :root { --mint: #a9bdd9; --mint-dark: #2d4a73; --ink: #1d2b28; --paper: #f6f3ea; --red: #c8463d; }
+  :root {
+    --steel: #a9bdd9; --navy: #2d4a73; --ink: #2a2118; --parchment: #fbf5e6; --edge: #c8b48a;
+    --brass: #d9a400; --red: #b8402f; --muted: #6e5f48;
+    --display: "IM Fell English SC", Georgia, serif; --serif: "IM Fell English", Georgia, serif;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: system-ui, sans-serif; background: var(--paper); color: var(--ink); }
-  main { max-width: 480px; margin: 0 auto; padding: 16px; }
+  body { margin: 0; font-family: system-ui, sans-serif; color: var(--ink); background: #f3ead6 url(assets/map.svg) 0 0 / 600px; }
+  main { max-width: 500px; margin: 0 auto; padding: 16px 16px 40px; }
+
   header { text-align: center; }
-  header svg { width: 180px; height: auto; }
-  h1 { margin: 4px 0 0; font-size: 2rem; letter-spacing: .02em; }
-  .sub { margin: 4px 0 6px; color: #55635f; font-size: .9rem; }
-  .days { display: flex; justify-content: center; align-items: center; gap: 14px; margin-bottom: 12px; font-weight: 700; }
-  .days a { color: var(--mint-dark); text-decoration: none; cursor: pointer; padding: 4px 8px; border-radius: 8px; background: #fff; }
+  .hero { width: 100%; max-width: 360px; height: auto; display: block; margin: 4px auto -6px; filter: drop-shadow(0 6px 8px rgba(45, 74, 115, .2)); }
+  .road { height: 6px; max-width: 380px; margin: 0 auto 10px; border-radius: 3px; background: repeating-linear-gradient(90deg, var(--navy) 0 22px, transparent 22px 34px); opacity: .35; }
+  h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 2.8rem; color: var(--navy); letter-spacing: .03em; line-height: 1; }
+  .sub { margin: 4px 0 10px; font-family: var(--serif); font-style: italic; color: var(--muted); font-size: 1.05rem; }
+  .days { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 14px; font-family: var(--display); font-size: 1.1rem; }
+  .days a { color: var(--parchment); background: var(--navy); text-decoration: none; cursor: pointer; padding: 3px 10px; border-radius: 999px; font-family: system-ui, sans-serif; font-size: .8rem; }
   .days a[hidden] { display: none; }
-  details { background: #fff; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; font-size: .9rem; }
-  summary { cursor: pointer; font-weight: 600; }
-  ol { background: #fff; border-radius: 10px; padding: 10px 12px 10px 34px; margin: 0 0 12px; }
-  li { padding: 4px 0; cursor: pointer; }
+
+  .card { background: var(--parchment); border: 1px solid var(--edge); border-radius: 6px; box-shadow: 0 2px 0 var(--edge), 0 8px 18px rgba(80, 60, 20, .12); margin-bottom: 14px; }
+  .card h2 { margin: 0; padding: 8px 14px 0; font-family: var(--display); font-weight: 400; font-size: 1.2rem; color: var(--navy); }
+  details.card { padding: 8px 14px; font-size: .92rem; line-height: 1.45; }
+  summary { cursor: pointer; font-family: var(--display); font-size: 1.1rem; color: var(--navy); }
+
+  ol { margin: 0; padding: 6px 14px 10px 38px; font-family: var(--serif); font-size: 1.08rem; line-height: 1.35; }
+  li { padding: 5px 0; cursor: pointer; border-bottom: 1px dashed #e0d2b0; }
+  li:last-child { border-bottom: 0; }
+  li::marker { font-family: var(--display); color: var(--muted); }
   li.done { text-decoration: line-through; opacity: .45; }
-  li.broken { color: var(--red); font-weight: 600; }
-  #tray { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; min-height: 40px; margin-bottom: 12px; }
-  .chip { border: 2px solid var(--mint-dark); background: #fff; border-radius: 999px; padding: 6px 10px; font-size: .95rem; cursor: pointer; }
-  .chip.sel, .seat.sel { background: #ffe9a8; border-color: #d9a400; }
+  li.broken { color: var(--red); }
+  li.broken::after { content: " ✗"; font-weight: 700; }
+  .nm { white-space: nowrap; }
+  .nm b { font-weight: 400; font-family: var(--display); }
+  .av { width: 1.4em; height: 1.4em; border-radius: 50%; vertical-align: -.35em; margin-right: 3px; box-shadow: 0 0 0 1px var(--edge); }
+
+  .boarding { padding-bottom: 10px; }
+  #tray { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; min-height: 44px; padding: 8px 10px 0; }
+  #tray:empty::after { content: "All aboard!"; font-family: var(--serif); font-style: italic; color: var(--muted); align-self: center; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; border: 2px solid var(--navy); background: #fff; border-radius: 999px; padding: 3px 12px 3px 3px; font-family: var(--display); font-size: 1rem; color: var(--ink); cursor: grab; }
+  .chip img { width: 32px; height: 32px; border-radius: 50%; }
+  .chip.sel { background: #ffe9a8; border-color: var(--brass); }
   .chip, .seat { touch-action: none; user-select: none; -webkit-user-select: none; }
-  .seat.over { background: #ffe9a8; border-color: #d9a400; border-style: dashed; }
   .dragging { opacity: .35; }
-  .ghost { position: fixed; z-index: 10; pointer-events: none; transform: translate(-50%, -50%) scale(1.1); background: #ffe9a8; border: 2px solid #d9a400; border-radius: 999px; padding: 6px 10px; font-size: .95rem; box-shadow: 0 6px 16px rgba(0,0,0,.25); white-space: nowrap; }
-  .car { max-width: 300px; margin: 0 auto; background: var(--mint); border-radius: 60px 60px 28px 28px; padding: 46px 18px 22px; position: relative; }
-  .car::before { content: "▲ driver's cockpit"; position: absolute; top: 12px; left: 22%; right: 22%; text-align: center; font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; background: #cfe9f3; border-radius: 10px 10px 4px 4px; padding: 4px 0; color: #3d6470; }
-  .row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
-  .row:last-child { margin-bottom: 0; }
-  .seat { aspect-ratio: 1 / .8; border: 2px solid var(--mint-dark); border-radius: 14px 14px 8px 8px; background: #eaf6f2; cursor: pointer; font-size: .8rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px; color: #55635f; }
-  .seat .emo { font-size: 1.8rem; }
-  .seat .who { color: var(--ink); font-weight: 600; text-align: center; }
-  .controls { display: flex; gap: 8px; margin: 14px 0 6px; }
-  button.big { flex: 1; padding: 12px; font-size: 1rem; font-weight: 700; border: 0; border-radius: 10px; cursor: pointer; }
-  #check { background: var(--mint-dark); color: #fff; }
-  #clear { background: #ddd8c8; color: var(--ink); flex: 0 0 30%; }
+  .ghost { position: fixed; z-index: 10; pointer-events: none; transform: translate(-50%, -50%) scale(1.1) rotate(-3deg); display: flex; align-items: center; gap: 6px; background: #ffe9a8; border: 2px solid var(--brass); border-radius: 999px; padding: 3px 12px 3px 3px; font-family: var(--display); box-shadow: 0 10px 22px rgba(0,0,0,.3); white-space: nowrap; }
+  .ghost img { width: 34px; height: 34px; border-radius: 50%; }
+
+  .car { position: relative; max-width: 300px; aspect-ratio: 300 / 560; margin: 0 auto; background: url(assets/cabin.svg) center / 100% 100% no-repeat; filter: drop-shadow(0 10px 14px rgba(29, 43, 58, .3)); }
+  .cockpit { position: absolute; top: 25.6%; left: 0; right: 0; text-align: center; font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: #ffe9a8; opacity: .8; }
+  .seats { position: absolute; top: 30%; bottom: 4.5%; left: 12%; right: 12%; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 5% 9%; }
+  .seat { position: relative; border: 0; padding: 0; cursor: pointer; background: url(assets/seat.svg) center / 100% 100% no-repeat; border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; transition: transform .12s, box-shadow .12s; }
+  .seat img { width: 58%; aspect-ratio: 1; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,.35); }
+  .seat .who { font-family: var(--display); font-size: .78rem; background: var(--navy); color: var(--parchment); padding: 1px 7px; border-radius: 999px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .seat.sel, .seat.over { box-shadow: 0 0 0 3px var(--brass); transform: scale(1.04); }
+  .seat.over { box-shadow: 0 0 0 3px var(--brass), 0 0 18px rgba(217, 164, 0, .8); }
+  .seat:disabled { cursor: default; }
+
+  .controls { display: flex; gap: 8px; margin: 16px 0 6px; }
+  button.big { flex: 1; padding: 12px; font-family: var(--display); font-size: 1.2rem; border: 0; border-radius: 6px; cursor: pointer; box-shadow: 0 3px 0 rgba(0,0,0,.25); }
+  button.big:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,.25); }
+  #check { background: var(--navy); color: var(--parchment); }
+  #clear { background: var(--edge); color: var(--ink); flex: 0 0 34%; }
   button:disabled { opacity: .5; cursor: default; }
-  #msg { text-align: center; min-height: 1.4em; font-weight: 600; }
-  #win { background: #fff; border-radius: 10px; padding: 14px; text-align: center; }
-  #win h2 { margin: 0 0 6px; }
-  .fact { font-size: .9rem; background: var(--paper); border-radius: 8px; padding: 10px; text-align: left; }
-  #share { background: #d9a400; color: var(--ink); width: 100%; margin-top: 10px; }
-  .stats { font-size: .85rem; color: #55635f; }
+  #msg { text-align: center; min-height: 1.4em; font-family: var(--serif); font-size: 1.05rem; }
+
+  #win { padding: 16px; text-align: center; }
+  #win h2 { padding: 0; font-size: 2rem; }
+  .compass { width: 64px; animation: spin 2.4s cubic-bezier(.2, .7, .3, 1); }
+  @keyframes spin { from { transform: rotate(-540deg); } to { transform: rotate(0); } }
+  #winline { font-family: var(--serif); font-size: 1.1rem; margin: 4px 0 12px; }
+  .fact { font-family: var(--serif); font-size: 1.02rem; text-align: left; background: #f3e7c9; border-left: 4px solid var(--brass); padding: 10px 12px; margin: 0 0 12px; }
+  .fact b { font-family: var(--display); font-weight: 400; color: var(--navy); }
+  #share { background: var(--brass); color: var(--ink); width: 100%; margin-top: 8px; }
+  .stats { font-size: .85rem; color: var(--muted); margin: 4px 0; }
+  footer { text-align: center; font-size: .75rem; color: var(--muted); font-family: var(--serif); font-style: italic; }
 </style>
 </head>
 <body>
 <main>
   <header>
-    <svg viewBox="0 0 224 104" aria-hidden="true">
-      <path d="M10 84 L12 30 Q14 18 26 17 L130 15 Q142 15 152 24 L206 62 Q213 66 213 74 L213 84 Z" fill="#a9bdd9" stroke="#2d4a73" stroke-width="3" stroke-linejoin="round"/>
-      <path d="M22 25 L128 23 Q138 23 146 30 L172 50 L22 50 Z" fill="#cfe9f3" stroke="#2d4a73" stroke-width="2"/>
-      <path d="M60 24 V50 M98 23 V50" stroke="#2d4a73" stroke-width="3"/>
-            <ellipse cx="206" cy="70" rx="5" ry="3.5" fill="#fff6c8" stroke="#2d4a73" stroke-width="1.5"/>
-      <circle cx="50" cy="84" r="15" fill="#1d2b28"/><circle cx="50" cy="84" r="6" fill="#bbb"/>
-      <circle cx="178" cy="84" r="15" fill="#1d2b28"/><circle cx="178" cy="84" r="6" fill="#bbb"/>
-    </svg>
+    <img class="hero" src="assets/columbus-side.svg" alt="Illustration of the 1992 Italdesign Columbus concept van">
+    <div class="road"></div>
     <h1>Sei Posti</h1>
-    <p class="sub">The daily Italdesign Columbus seating puzzle</p>
+    <p class="sub">The daily Italdesign Columbus seating voyage</p>
     <nav class="days">
-      <a id="prev" aria-label="Previous puzzle">◀</a>
+      <a id="prev" aria-label="Previous voyage">◀</a>
       <span id="num"></span>
-      <a id="next" aria-label="Next puzzle">▶</a>
+      <a id="next" aria-label="Next voyage">▶</a>
       <a id="today">Today</a>
     </nav>
   </header>
 
-  <details>
-    <summary>How to play</summary>
-    <p>The 1992 Italdesign Columbus concept carries its passengers in rows of two behind a raised central driver's seat. Use the clues to work out where today's six passengers sit in the front, middle and back rows.</p>
-    <p>Drag passengers into seats, or tap a passenger and then a seat. Drag a seated passenger onto someone else to swap them, or off the car to unseat them. Tap a clue to cross it off.</p>
-    <p>"Left" and "right" are as seen sitting in the car, facing forward. "Directly behind" means one row back, on the same side.</p>
+  <details class="card">
+    <summary>Ship's orders</summary>
+    <p>The 1992 Italdesign Columbus concept carries its passengers in rows of two behind a raised central driver's seat. Read the captain's log to work out where today's six passengers sit in the front, middle and back rows.</p>
+    <p>Drag passengers into seats, or tap a passenger and then a seat. Drag a seated passenger onto someone else to swap them, or off the van to send them back to boarding. Tap a log entry to cross it off.</p>
+    <p>"Left" and "right" are as seen sitting in the van, facing forward. "Directly behind" means one row back, on the same side.</p>
   </details>
 
-  <ol id="clues"></ol>
-  <div id="tray"></div>
+  <section class="card">
+    <h2>Captain's log</h2>
+    <ol id="clues"></ol>
+  </section>
+
+  <section class="card boarding">
+    <h2>Boarding</h2>
+    <div id="tray"></div>
+  </section>
+
   <div class="car">
-    <div class="row" id="front"></div>
-    <div class="row" id="mid"></div>
-    <div class="row" id="back"></div>
+    <div class="cockpit">driver</div>
+    <div class="seats" id="seats"></div>
   </div>
+
   <div class="controls">
-    <button class="big" id="check">Partiamo!</button>
-    <button class="big" id="clear">Clear</button>
+    <button class="big" id="check">Salpiamo! ⚓</button>
+    <button class="big" id="clear">Disembark</button>
   </div>
   <p id="msg"></p>
 
-  <section id="win" hidden>
-    <h2>Andiamo! 🚐💨</h2>
+  <section class="card" id="win" hidden>
+    <img class="compass" src="assets/favicon.svg" alt="">
+    <h2>Terra! Land ho!</h2>
     <p id="winline"></p>
-    <p class="fact"><b>Columbus fact:</b> <span id="fact"></span></p>
+    <p class="fact"><b>From the logbook:</b> <span id="fact"></span></p>
     <p class="stats" id="stats"></p>
-    <p class="stats" id="next-trip">Next trip in <span id="countdown"></span></p>
-    <button class="big" id="share">Share result</button>
+    <p class="stats" id="next-trip">Next voyage departs in <span id="countdown"></span></p>
+    <button class="big" id="share">Share your voyage</button>
   </section>
+
+  <footer>A fan-made puzzle. Not affiliated with Italdesign. Illustrations are original.</footer>
 </main>
 
 <script>
 const PEOPLE = [
-  ["Nonna Pina", "👵"], ["Nonno Gino", "👴"], ["Giulia", "👩"], ["Marco", "👨"],
-  ["Sofia", "👧"], ["Luca", "👦"], ["Zio Franco", "🧔"], ["Carla", "👩‍🦰"],
-  ["Enzo", "👨‍🦳"], ["Teresa", "👩‍🦳"]
+  ["Nonna Pina", "nonna"], ["Nonno Gino", "nonno"], ["Giulia", "giulia"], ["Marco", "marco"],
+  ["Sofia", "sofia"], ["Luca", "luca"], ["Zio Franco", "franco"], ["Carla", "carla"],
+  ["Enzo", "enzo"], ["Teresa", "teresa"]
 ];
 const FACTS = [
   "The Columbus was a 1992 concept from Italdesign, the Turin design house founded by Giorgetto Giugiaro.",
@@ -151,7 +191,8 @@ const ALL = perms([0, 1, 2, 3, 4, 5]); // p[person] = seat; seats 0-1 front, 2-3
 // Today's cast, solution and clues.
 const cast = shuffle(PEOPLE.slice()).slice(0, 6);
 const sol = shuffle([0, 1, 2, 3, 4, 5]);
-const N = i => `<b>${cast[i][1]} ${cast[i][0]}</b>`;
+const face = i => `<img src="assets/p-${cast[i][1]}.svg" alt="">`;
+const N = i => `<span class="nm"><img class="av" src="assets/p-${cast[i][1]}.svg" alt=""><b>${cast[i][0]}</b></span>`;
 
 function candidates() {
   const ROWS = ["front", "middle", "back"];
@@ -201,19 +242,16 @@ const $ = id => document.getElementById(id);
 function save() { localStorage.setItem(KEY, JSON.stringify({ place, history, solved })); }
 
 function render() {
-  $("num").textContent = `#${num} · ${new Date(2026, 9, 29 + day).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}`;
+  $("num").textContent = `Voyage ${num} · ${new Date(2026, 9, 29 + day).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}`;
   $("clues").innerHTML = clues.map((c, i) =>
     `<li data-i="${i}" class="${struck.has(i) ? "done" : ""} ${broken.includes(i) ? "broken" : ""}">${c.t}</li>`).join("");
   $("tray").innerHTML = cast.map((p, i) => place.includes(i) ? "" :
-    `<button class="chip ${sel === i ? "sel" : ""}" data-p="${i}">${p[1]} ${p[0]}</button>`).join("");
-  const seatHTML = s => {
-    const p = place[s];
-    const inner = p === null ? "" : `<span class="emo">${cast[p][1]}</span><span class="who">${cast[p][0]}</span>`;
-    return `<button class="seat ${p !== null && p === sel ? "sel" : ""}" data-s="${s}" ${solved ? "disabled" : ""}>${inner}</button>`;
-  };
-  $("front").innerHTML = [0, 1].map(seatHTML).join("");
-  $("mid").innerHTML = [2, 3].map(seatHTML).join("");
-  $("back").innerHTML = [4, 5].map(seatHTML).join("");
+    `<button class="chip ${sel === i ? "sel" : ""}" data-p="${i}">${face(i)}${p[0]}</button>`).join("");
+  $("seats").innerHTML = place.map((p, s) => {
+    const inner = p === null ? "" : `${face(p)}<span class="who">${cast[p][0]}</span>`;
+    const label = ["front", "middle", "back"][row(s)] + (col(s) ? " right" : " left") + " seat";
+    return `<button class="seat ${p !== null && p === sel ? "sel" : ""}" data-s="${s}" aria-label="${label}" ${solved ? "disabled" : ""}>${inner}</button>`;
+  }).join("");
   $("check").disabled = solved;
   $("clear").disabled = solved;
   $("win").hidden = !solved;
@@ -231,7 +269,7 @@ function tapSeat(s) {
 }
 
 function check() {
-  if (place.includes(null)) { $("msg").textContent = "Seat all six passengers first."; return; }
+  if (place.includes(null)) { $("msg").textContent = "Everyone must be aboard before we sail."; return; }
   const p = cast.map((_, i) => place.indexOf(i));
   broken = clues.map((c, i) => c.f(p) ? -1 : i).filter(i => i >= 0);
   history.push(p.filter((s, i) => s === sol[i]).length);
@@ -240,9 +278,10 @@ function check() {
     if (isToday) recordWin();
     $("msg").textContent = "";
   } else {
-    $("msg").textContent = `${history.at(-1)} of 6 in the right seat. The red clues are broken.`;
+    $("msg").textContent = `${history.at(-1)} of 6 in the right seat. Check the log entries marked ✗.`;
   }
   save(); render();
+  if (solved) $("win").scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 // Streaks only count puzzles solved on their own day.
@@ -256,17 +295,17 @@ function recordWin() {
 
 function showWin() {
   const n = history.length;
-  $("winline").textContent = `Everyone's seated, in ${n} ${n === 1 ? "check" : "checks"}.`;
+  $("winline").textContent = `All six passengers seated in ${n} ${n === 1 ? "check" : "checks"}.`;
   $("fact").textContent = FACTS[day % FACTS.length];
   const st = JSON.parse(localStorage.getItem("seiposti-columbus-stats") || "{}");
-  $("stats").textContent = `Daily solves: ${st.wins || 0} · Streak: ${st.streak || 0} · Best: ${st.max || 0}`;
+  $("stats").textContent = `Daily voyages: ${st.wins || 0} · Streak: ${st.streak || 0} · Best: ${st.max || 0}`;
   $("next-trip").hidden = !isToday;
 }
 
 const dayURL = n => location.pathname + "?day=" + n;
 
 function shareText() {
-  return `Sei Posti #${num} 🚐\n` + history.map(n => "🟩".repeat(n) + "⬜".repeat(6 - n)).join("\n") + "\n" + location.origin + dayURL(num);
+  return `Sei Posti voyage ${num} 🧭\n` + history.map(n => "🟩".repeat(n) + "⬜".repeat(6 - n)).join("\n") + "\n" + location.origin + dayURL(num);
 }
 
 function tick() {
@@ -288,6 +327,7 @@ document.addEventListener("pointerdown", e => {
   const chip = e.target.closest("[data-p]"), seat = e.target.closest("[data-s]");
   const person = chip ? +chip.dataset.p : seat ? place[+seat.dataset.s] : null;
   if (person === null) return;
+  e.preventDefault(); // stops the browser's native image drag
   drag = { person, src: chip || seat, x: e.clientX, y: e.clientY, ghost: null };
 });
 document.addEventListener("pointermove", e => {
@@ -296,7 +336,7 @@ document.addEventListener("pointermove", e => {
     if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
     drag.ghost = document.createElement("div");
     drag.ghost.className = "ghost";
-    drag.ghost.textContent = `${cast[drag.person][1]} ${cast[drag.person][0]}`;
+    drag.ghost.innerHTML = `${face(drag.person)}${cast[drag.person][0]}`;
     document.body.append(drag.ghost);
     drag.src.classList.add("dragging");
   }
@@ -314,7 +354,7 @@ document.addEventListener("pointerup", e => {
   setTimeout(() => { justDragged = false; }, 0);
   const target = seatAt(e.clientX, e.clientY);
   if (target) { sel = person; tapSeat(+target.dataset.s); return; }
-  const from = place.indexOf(person); // dropped off the car: back to the tray
+  const from = place.indexOf(person); // dropped off the van: back to boarding
   if (from >= 0) place[from] = null;
   sel = null; broken = []; $("msg").textContent = "";
   save(); render();
@@ -334,7 +374,7 @@ $("share").onclick = async () => {
   const text = shareText();
   if (navigator.share) { try { await navigator.share({ text }); return; } catch (e) {} }
   await navigator.clipboard.writeText(text);
-  $("share").textContent = "Copied!";
+  $("share").textContent = "Copied to the logbook!";
 };
 
 $("prev").href = dayURL(num - 1);
