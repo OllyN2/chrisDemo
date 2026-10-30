@@ -25,6 +25,10 @@
   #tray { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; min-height: 40px; margin-bottom: 12px; }
   .chip { border: 2px solid var(--mint-dark); background: #fff; border-radius: 999px; padding: 6px 10px; font-size: .95rem; cursor: pointer; }
   .chip.sel, .seat.sel { background: #ffe9a8; border-color: #d9a400; }
+  .chip, .seat { touch-action: none; user-select: none; -webkit-user-select: none; }
+  .seat.over { background: #ffe9a8; border-color: #d9a400; border-style: dashed; }
+  .dragging { opacity: .35; }
+  .ghost { position: fixed; z-index: 10; pointer-events: none; transform: translate(-50%, -50%) scale(1.1); background: #ffe9a8; border: 2px solid #d9a400; border-radius: 999px; padding: 6px 10px; font-size: .95rem; box-shadow: 0 6px 16px rgba(0,0,0,.25); white-space: nowrap; }
   .car { background: var(--mint); border-radius: 60px 60px 28px 28px; padding: 46px 18px 22px; position: relative; }
   .car::before { content: "windscreen"; position: absolute; top: 12px; left: 22%; right: 22%; text-align: center; font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; background: #cfe9f3; border-radius: 10px 10px 4px 4px; padding: 4px 0; color: #3d6470; }
   .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
@@ -70,7 +74,7 @@
   <details>
     <summary>How to play</summary>
     <p>The Fiat Multipla seats six people in two rows of three. Use the clues to work out where today's six passengers sit.</p>
-    <p>Tap a passenger, then tap a seat. Tap a seated passenger to move or swap them. Tap a clue to cross it off.</p>
+    <p>Drag passengers into seats, or tap a passenger and then a seat. Drag a seated passenger onto someone else to swap them, or off the car to unseat them. Tap a clue to cross it off.</p>
     <p>"Left" and "right" are as seen sitting in the car, facing forward. The driver sits front-left. "Next to" means side by side in the same row.</p>
   </details>
 
@@ -273,7 +277,54 @@ function tick() {
   $("countdown").textContent = [s / 3600, s % 3600 / 60, s % 60].map(v => String(Math.floor(v)).padStart(2, "0")).join(":");
 }
 
+// Drag and drop (mouse and touch). A press that doesn't move is left to the click handler.
+let drag = null, justDragged = false;
+const seatAt = (x, y) => document.elementFromPoint(x, y)?.closest("[data-s]");
+function endDrag() {
+  if (drag?.ghost) { drag.ghost.remove(); drag.src.classList.remove("dragging"); }
+  document.querySelectorAll(".seat.over").forEach(s => s.classList.remove("over"));
+  drag = null;
+}
+document.addEventListener("pointerdown", e => {
+  if (solved || e.button > 0) return;
+  const chip = e.target.closest("[data-p]"), seat = e.target.closest("[data-s]");
+  const person = chip ? +chip.dataset.p : seat ? place[+seat.dataset.s] : null;
+  if (person === null) return;
+  drag = { person, src: chip || seat, x: e.clientX, y: e.clientY, ghost: null };
+});
+document.addEventListener("pointermove", e => {
+  if (!drag) return;
+  if (!drag.ghost) {
+    if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+    drag.ghost = document.createElement("div");
+    drag.ghost.className = "ghost";
+    drag.ghost.textContent = `${cast[drag.person][1]} ${cast[drag.person][0]}`;
+    document.body.append(drag.ghost);
+    drag.src.classList.add("dragging");
+  }
+  drag.ghost.style.left = e.clientX + "px";
+  drag.ghost.style.top = e.clientY + "px";
+  document.querySelectorAll(".seat.over").forEach(s => s.classList.remove("over"));
+  seatAt(e.clientX, e.clientY)?.classList.add("over");
+});
+document.addEventListener("pointerup", e => {
+  if (!drag) return;
+  const { person, ghost } = drag;
+  endDrag();
+  if (!ghost) return;
+  justDragged = true;
+  setTimeout(() => { justDragged = false; }, 0);
+  const target = seatAt(e.clientX, e.clientY);
+  if (target) { sel = person; tapSeat(+target.dataset.s); return; }
+  const from = place.indexOf(person); // dropped off the car: back to the tray
+  if (from >= 0) place[from] = null;
+  sel = null; broken = []; $("msg").textContent = "";
+  save(); render();
+});
+document.addEventListener("pointercancel", endDrag);
+
 document.addEventListener("click", e => {
+  if (justDragged) return;
   const chip = e.target.closest("[data-p]"), seat = e.target.closest("[data-s]"), li = e.target.closest("li[data-i]");
   if (chip) { const i = +chip.dataset.p; sel = sel === i ? null : i; render(); }
   else if (seat) tapSeat(+seat.dataset.s);
